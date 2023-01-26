@@ -1,47 +1,38 @@
-#!/usr/bin/python3
-""" FIFO Caching """
+i#!/usr/bin/python3
+""" BasicCache module
+"""
 
 from base_caching import BaseCaching
 
 
 class FIFOCache(BaseCaching):
-    """ FIFO caching """
-
+    """ FIFOCache module:
+      Inherits from the BaseCaching module
+    """
     def __init__(self):
-        """ Constructor """
+        """
+        initialize class instance
+        """
         super().__init__()
-        self.queue = []
+        self.cache_data_list = []
 
     def put(self, key, item):
-        """ Puts item in cache """
-        if key is None or item is None:
-            return
-
-        if key not in self.queue:
-            self.queue.append(key)
-        else:
-            self.mv_last_list(key)
-
-        self.cache_data[key] = item
-
-        if len(self.cache_data) > BaseCaching.MAX_ITEMS:
-            first = self.get_first_list(self.queue)
-            if first:
-                self.queue.pop(0)
-                del self.cache_data[first]
-                print("DISCARD: {}".format(first))
+        """
+        add an item to the caching system
+        """
+        if key and item:
+            self.cache_data[key] = item
+            self.cache_data_list.append(key)
+            if len(self.cache_data) > BaseCaching.MAX_ITEMS:
+                self.cache_data.pop(self.cache_data_list[0])
+                discard = self.cache_data_list.pop(0)
+                print("DISCARD: {}".format(discard))
 
     def get(self, key):
-        """ Gets item from cache """
-        return self.cache_data.get(key, None)
-
-    def mv_last_list(self, item):
-        """ Moves element to last idx of list """
-        length = len(self.queue)
-        if self.queue[length - 1] != item:
-            self.queue.remove(item)
-            self.queue.append(item)
-
-    @staticmethod
-    def get_first_list(array):
-        """ Get first element of list or None """
+        """
+        Returns: item associated with the key
+        None if the key is not in the cache
+        """
+        if key in self.cache_data:
+            return self.cache_data[key]
+        return None
